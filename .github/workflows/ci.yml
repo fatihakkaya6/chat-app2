@@ -1,0 +1,35 @@
+name: CI Pipeline
+
+# Auslöser für den Workflow: Bei jedem Push in den "staging" Branch
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  build:
+    # Läuft auf der neuesten Version von Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Schritt 1: Checkout des Repository-Codes
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Schritt 2: Python-Umgebung einrichten
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      # Schritt 3: Installiere die notwendigen Python-Pakete
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend-server/requirements.txt
+        working-directory: ./backend-server
+
+      # Schritt 4: Unit-Tests ausführen
+      - name: Run tests
+        run: python -m unittest discover -s tests
+        working-directory: ./backend-server
